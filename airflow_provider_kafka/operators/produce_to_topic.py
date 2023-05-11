@@ -59,17 +59,17 @@ class ProduceToTopicOperator(BaseOperator):
     )
 
     def __init__(
-        self,
-        topic: str,
-        producer_function: Union[str, Callable[..., Any]],
-        producer_function_args: Optional[Sequence[Any]] = None,
-        producer_function_kwargs: Optional[Dict[Any, Any]] = None,
-        delivery_callback: Optional[str] = None,
-        kafka_conn_id: Optional[str] = None,
-        synchronous: Optional[bool] = True,
-        kafka_config: Optional[Dict[Any, Any]] = None,
-        poll_timeout: float = 0,
-        **kwargs: Any,
+            self,
+            topic: str,
+            producer_function: Union[str, Callable[..., Any]],
+            producer_function_args: Optional[Sequence[Any]] = None,
+            producer_function_kwargs: Optional[Dict[Any, Any]] = None,
+            delivery_callback: Optional[str] = None,
+            kafka_conn_id: Optional[str] = None,
+            synchronous: Optional[bool] = True,
+            kafka_config: Optional[Dict[Any, Any]] = None,
+            poll_timeout: float = 0,
+            **kwargs: Any,
     ) -> None:
 
         super().__init__(**kwargs)
@@ -113,6 +113,12 @@ class ProduceToTopicOperator(BaseOperator):
             *self.producer_function_args,
             **self.producer_function_kwargs,
         )
+        res = producer_callable()
+        if isinstance(res, types.GeneratorType):
+            for a in res:
+                print(f"generator value a = {a}")
+        else:
+            print(f"produce_callable res = {res}")
 
         # For each returned k/v in the callable : publish and flush if needed.
         for k, v in producer_callable():
