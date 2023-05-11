@@ -114,14 +114,10 @@ class ProduceToTopicOperator(BaseOperator):
             **self.producer_function_kwargs,
         )
         res = producer_callable()
-        if isinstance(res, types.GeneratorType):
-            for a in res:
-                print(f"generator value a = {a}")
-        else:
-            print(f"produce_callable res = {res}")
+        print(f"produce_callable res = {res}")
 
         # For each returned k/v in the callable : publish and flush if needed.
-        for k, v in producer_callable():
+        for k, v in res:
             producer.produce(
                 self.topic, key=k, value=v, on_delivery=self.delivery_callback
             )
